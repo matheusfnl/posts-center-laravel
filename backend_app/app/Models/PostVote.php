@@ -10,6 +10,8 @@ class PostVote extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['vote_type', 'post_id', 'user_id'];
+
     const VOTE_TYPES = [
         'upvote',
         'downvote',

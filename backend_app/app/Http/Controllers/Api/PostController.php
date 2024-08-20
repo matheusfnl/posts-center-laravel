@@ -11,7 +11,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'getPostsByUser']);
     }
 
     /**
@@ -19,7 +19,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return Post::latest()->paginate();
     }
 
     /**
@@ -27,35 +27,52 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $post = Post::create([
+            ...$request->validate([
+                'title' => 'required|string|max:255',
+                'description' =>  'required|string|min:10',
+            ]),
+            'user_id' => $request->user()->id,
+        ]);
+
+        return $post;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Post $post)
     {
-        //
+        return $post;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $post->update($request->validate([
+            'title' => 'required|string|max:255',
+            'description' =>  'required|string|min:10',
+        ]));
+
+        return $post;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return response(status: 204);
     }
 
-    public function getPostsByUser(User $userId)
+    public function getPostsByUser(User $user)
     {
-        //
+        return Post::where('user_id', '=', $user->id)
+            ->latest()
+            ->paginate();
     }
 }

@@ -3,52 +3,43 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Post;
+use App\Models\PostVote;
 use Illuminate\Http\Request;
 
 class PostVoteController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum');
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function store(Request $request, string $postId)
     {
-        //
+        $post_vote = PostVote::create([
+            ...$request->validate([
+                'vote_type' => ['required', 'in:' . implode(',', PostVote::VOTE_TYPES)],
+            ]),
+            'user_id' => $request->user()->id,
+            'post_id' => (int) $postId,
+        ]);
+
+        return $post_vote;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function update(Request $request, string $postId, PostVote $vote)
     {
-        //
+        $vote->update($request->validate([
+            'vote_type' => ['required', 'in:' . implode(',', PostVote::VOTE_TYPES)],
+        ]));
+
+        return $vote;
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function destroy(string $postId, PostVote $vote)
     {
-        //
-    }
+        $vote->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response(status: 204);
     }
 }

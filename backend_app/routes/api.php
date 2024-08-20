@@ -17,5 +17,5 @@ Route::middleware('auth:sanctum')->group(function() {
 });
 
 Route::apiResource('posts', PostController::class);
-Route::apiResource('posts.votes', PostVoteController::class);
-Route::get('users/{userId}/posts', [PostController::class, 'getPostsByUser']);
+Route::apiResource('posts.votes', PostVoteController::class)->only(['store', 'destroy', 'update']);
+Route::get('users/{user}/posts', [PostController::class, 'getPostsByUser']);
