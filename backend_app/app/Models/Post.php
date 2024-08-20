@@ -29,9 +29,9 @@ class Post extends Model
         $user = Auth::guard('api')->user();
 
         if ($user) {
-            $user_vote = $this->postVotes()->where('user_id', $user->id)->first();
+            $userVote = $this->postVotes()->where('user_id', $user->id)->first();
 
-            return $user_vote ? $user_vote->pivot->vote_type : null;
+            return $userVote ? $userVote->pivot->vote_type : null;
         }
 
         return null;
