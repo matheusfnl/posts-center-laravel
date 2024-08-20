@@ -16,7 +16,16 @@ class PostVoteController extends Controller
 
     public function store(Request $request, string $postId)
     {
-        $post_vote = PostVote::create([
+        $userId = $request->user()->id;
+        $userVote = PostVote::where('user_id', $userId)
+            ->where('post_id', (int) $postId)
+            ->first();
+
+        if ($userVote) {
+            return response()->json(['error' => 'You already voted at this post.'], 400);
+        }
+
+        $postVote = PostVote::create([
             ...$request->validate([
                 'vote_type' => ['required', 'in:' . implode(',', PostVote::VOTE_TYPES)],
             ]),
@@ -24,7 +33,7 @@ class PostVoteController extends Controller
             'post_id' => (int) $postId,
         ]);
 
-        return $post_vote;
+        return $postVote;
     }
 
     public function update(Request $request, string $postId, PostVote $vote)
