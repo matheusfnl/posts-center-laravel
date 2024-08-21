@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+  import PostsContainer from '../components/home/PostsContainer.vue';
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
+  <main class="main-app">
+    <PostsContainer />
   </main>
 </template>
+
+<style scoped>
+  .main-app {
+    max-width: 1440px;
+    margin: auto;
+  }
+</style>
