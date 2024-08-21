@@ -53,8 +53,8 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
-    public function postVotes(): BelongsToMany
+    public function postVotes(): HasMany
     {
-        return $this->belongsToMany(User::class, 'post_votes')->withPivot('vote_type');
+        return $this->hasMany(PostVote::class);
     }
 }

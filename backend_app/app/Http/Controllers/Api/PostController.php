@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
@@ -51,6 +52,8 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        $this->authorizeUser($post, $request->user());
+
         $post->update($request->validate([
             'title' => 'required|string|max:255',
             'description' =>  'required|string|min:10',
@@ -62,8 +65,10 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Request $request, Post $post)
     {
+        $this->authorizeUser($post, $request->user());
+
         $post->delete();
 
         return response(status: 204);
@@ -74,5 +79,12 @@ class PostController extends Controller
         return Post::where('user_id', '=', $user->id)
             ->latest()
             ->paginate();
+    }
+
+    private function authorizeUser(Post $post, User $user): void
+    {
+        if ($post->user_id !== $user->id) {
+            abort(Response::HTTP_FORBIDDEN, 'Unauthorized');
+        }
     }
 }

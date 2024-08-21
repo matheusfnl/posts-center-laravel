@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
@@ -20,9 +21,14 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function postVotes(): BelongsToMany
+    public function postVotes(): HasMany
     {
-        return $this->belongsToMany(User::class, 'post_votes')->withPivot('vote_type');
+        return $this->hasMany(PostVote::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 
     public function getVoteAttribute() {
@@ -31,7 +37,7 @@ class Post extends Model
         if ($user) {
             $userVote = $this->postVotes()->where('user_id', $user->id)->first();
 
-            return $userVote ? $userVote->pivot->vote_type : null;
+            return $userVote ? $userVote->vote_type : null;
         }
 
         return null;
