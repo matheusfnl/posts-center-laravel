@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { ref, computed, getCurrentInstance } from 'vue';
   import PostItem from './PostItem.vue'
 
   // Filter
@@ -31,6 +31,14 @@
   })
 
   const getActivePage = (page: number) => page === active_page.value;
+
+  // Add posts
+  const { proxy } = getCurrentInstance();
+
+  const handleAddPost = () => proxy.$modal.open({
+    component: {},
+    props: {}
+  });
 </script>
 
 <template>
@@ -47,7 +55,7 @@
       </div>
 
       <div class="filters-wrapper">
-        <button class="filter-button">
+        <button class="filter-button" @click="handleAddPost">
           Add post
         </button>
 
