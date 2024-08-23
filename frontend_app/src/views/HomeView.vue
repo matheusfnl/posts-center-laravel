@@ -3,14 +3,5 @@
 </script>
 
 <template>
-  <main class="main-app">
-    <PostsContainer />
-  </main>
+  <PostsContainer />
 </template>
-
-<style scoped>
-  .main-app {
-    max-width: 1440px;
-    margin: auto;
-  }
-</style>

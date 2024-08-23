@@ -37,7 +37,7 @@
   // Add posts
   const { proxy } = getCurrentInstance() || {};
 
-  const handleAddPost = () => proxy?.$modal.open({
+  const handleAddPost = () => proxy?.$modal?.open({
     component: LoginModal,
     props: {}
   });

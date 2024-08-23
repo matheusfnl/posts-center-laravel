@@ -1,53 +1,59 @@
 <script setup lang="ts">
-  import { ref, getCurrentInstance } from 'vue';
-  import { useRouter } from 'vue-router';
+  import { ref } from 'vue';
 
   const username = ref('');
   const password = ref('');
-
-  const { proxy } = getCurrentInstance() || {};
-  const router = useRouter()
-
-  const handleSignUp = () => {
-    proxy?.$modal?.close();
-    router.push('/register');
-  };
+  const confirmation_password = ref('');
 </script>
 
 <template>
-  <div class="login-modal-container">
-    <div class="login-modal-header">
-      Sign in
-    </div>
+  <div class="sign-up-container">
+    <div class="posts-modal-container">
+      <div class="posts-modal-header">
+        Sign up
+      </div>
 
-    <div class="input-container">
-      <label for="username">Username</label>
-      <input name="username" type="text" v-model="username" />
-    </div>
+      <div class="input-container">
+        <label for="username">Username</label>
+        <input name="username" type="text" v-model="username" />
+      </div>
 
-    <div class="input-container">
-      <label for="password">Password</label>
-      <input name="password" type="password" v-model="password" />
-    </div>
+      <div class="input-container">
+        <label for="password">Password</label>
+        <input name="password" type="password" v-model="password" />
+      </div>
 
-    <div class="actions-container">
-      <button @click="handleLogin">
-        Sign in
-      </button>
-    </div>
+      <div class="input-container">
+        <label for="password">Confirm password</label>
+        <input name="password" type="password" v-model="confirmation_password" />
+      </div>
 
-    <div class="extra-options">
-      <span>
-        Don't have an account?
+      <div class="actions-container">
+        <button @click="handleAddPost">
+          Sign up
+        </button>
+      </div>
 
-        <button @click="handleSignUp">Create one.</button>
-      </span>
+      <div class="extra-options">
+        <span>
+          Have an account?
+
+          <router-link to="/">Sign in.</router-link>
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-  .login-modal-container {
+  .sign-up-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+  }
+
+  .posts-modal-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -55,7 +61,7 @@
     padding: 8px;
   }
 
-  .login-modal-header {
+  .posts-modal-header {
     display: flex;
     justify-content: center;
     font-size: 18px;
@@ -102,22 +108,12 @@
     color: var(--base-800);
   }
 
-  .extra-options button {
-    cursor: pointer;
+  .extra-options a {
     color: var(--primary-500);
     text-decoration: none;
-    background-color: transparent;
-    margin: 0;
-    padding: 0;
-    border: none;
   }
 
-  .extra-options button:focus {
-    border: none;
-    outline: none;
-  }
-
-  .extra-options button:hover {
+  .extra-options a:hover {
     color: var(--primary-600);
     text-decoration: underline;
   }

@@ -7,6 +7,15 @@
   <div>
     <Modal />
     <ThemeSelector />
-    <RouterView />
+    <main class="main-app">
+      <RouterView />
+    </main>
   </div>
 </template>
+
+<style scoped>
+  .main-app {
+    max-width: 1440px;
+    margin: auto;
+  }
+</style>

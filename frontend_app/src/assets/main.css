@@ -53,6 +53,11 @@ body * {
   color: var(--text-500);
 }
 
+.dark-theme textarea,
+.dark-theme input {
+  background-color: var(--base-300);
+}
+
 button:focus, textarea:focus, input:focus {
   outline: 2px solid var(--primary-500);
   outline-offset: 0px;
