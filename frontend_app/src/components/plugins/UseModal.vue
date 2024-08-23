@@ -46,6 +46,7 @@
     min-height: 100vh;
     z-index: 10000;
     background-color: var(--backdrop);
+    backdrop-filter: blur(2px);
   }
 
   .modal-content {
