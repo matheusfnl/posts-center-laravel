@@ -121,19 +121,19 @@
 
   .posts-header .filters-wrapper button.filter-button {
     border: none;
-    background-color: rgb(104, 104, 255);
+    background-color: var(--secondary-500);
     cursor: pointer;
     padding: 8px 10px;
     border-radius: 6px;
-    color: white;
+    color: var(--base-50);
   }
 
   .posts-header .filters-wrapper button.filter-button:hover {
-    background-color: rgb(92, 92, 238);
+    background-color: var(--secondary-600);
   }
 
   .posts-header .filters-wrapper .filters-container {
-    border: 1px solid rgb(211, 211, 211);
+    border: 1px solid var(--base-300);
     border-radius: 6px;
     margin-bottom: 8px;
     padding: 4px;
@@ -150,11 +150,11 @@
   }
 
   .posts-header .filters-wrapper .filters-container button:hover {
-    background-color: rgb(243, 243, 243);
+    background-color: var(--base-400);
   }
 
   .posts-header .filters-wrapper .filters-container button.active {
-    background-color: rgb(235, 235, 235);
+    background-color: var(--base-500);
   }
 
   .posts-container {
@@ -172,18 +172,18 @@
   .pages-container button {
     background-color: transparent;
     cursor: pointer;
-    border: 1px solid rgb(211, 211, 211);
+    border: 1px solid var(--base-300);
     border-radius: 6px;
     padding: 4px 6px;
   }
 
   .pages-container button:hover {
-    background-color: rgb(243, 243, 243);
+    background-color: var(--base-400);
   }
 
   .pages-container button.active {
-    background-color: rgb(255, 152, 16);
-    color: white;
+    background-color: var(--primary-500);
+    color: var(--base-50);
     border: none;
   }
 </style>

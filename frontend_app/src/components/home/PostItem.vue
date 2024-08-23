@@ -22,7 +22,7 @@
 
 <style scoped>
   .post-container {
-    border: 1px solid rgb(238, 238, 238);
+    border: 1px solid var(--base-300);
     border-radius: 6px;
     padding: 16px;
     display: flex;
@@ -45,11 +45,11 @@
   }
 
   .post-content .title {
-    color: rgb(255, 152, 16);
+    color: var(--primary-500);
     font-size: 16px;
     text-decoration: none;
   }
 
-  .post-content .title:hover { color: rgb(219, 126, 4); }
+  .post-content .title:hover { color: var(--primary-600) }
   .post-content .description { font-size: 12px; }
 </style>

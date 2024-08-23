@@ -45,12 +45,12 @@
     width: 100vw;
     min-height: 100vh;
     z-index: 10000;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--backdrop);
   }
 
   .modal-content {
     z-index: 2;
-    background: white;
+    background: var(--base-50);
     min-width: 200px;
     max-height: 100vh;
     border-radius: 8px;

@@ -60,7 +60,7 @@
 
   .input-container input { height: 28px; }
   .input-container input, .input-container textarea {
-    border: 1px solid rgb(238, 238, 238);
+    border: 1px solid var(--base-200);
     border-radius: 4px;
     font-size: 12px;
     resize: none;
@@ -73,33 +73,33 @@
 
   .actions-container button {
     border: none;
-    background-color: rgb(104, 104, 255);
+    background-color: var(--secondary-500);
     cursor: pointer;
     padding: 8px 10px;
     border-radius: 6px;
-    color: white;
+    color: var(--base-50);
     width: 100%;
     font-weight: 500;
   }
 
   .actions-container button:hover {
-    background-color: rgb(92, 92, 238);
+    background-color: var(--secondary-600);
   }
 
   .extra-options {
     display: flex;
     justify-content: center;
     font-size: 12px;
-    color: rgb(143, 143, 143);
+    color: var(--base-800);
   }
 
   .extra-options a {
-    color: rgb(255, 152, 16);
+    color: var(--primary-500);
     text-decoration: none;
   }
 
   .extra-options a:hover {
-    color: rgb(238, 145, 23);
+    color: var(--primary-600);
     text-decoration: underline;
   }
 </style>

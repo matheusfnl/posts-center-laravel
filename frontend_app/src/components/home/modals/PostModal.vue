@@ -63,14 +63,14 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    border: 1px solid rgb(233, 233, 233);
+    border: 1px solid var(--base-500);
     border-radius: 6px;
     padding: 8px;
   }
 
   .input-container input { height: 28px; }
   .input-container input, .input-container textarea {
-    border: 1px solid rgb(238, 238, 238);
+    border: 1px solid var(--base-200);
     border-radius: 4px;
     font-size: 12px;
     resize: none;
@@ -78,7 +78,7 @@
 
   .input-container span {
     font-size: 10px;
-    color: rgb(131, 131, 131);
+    color: var(--base-900);
   }
 
   .input-container.disabled-container {
@@ -92,18 +92,18 @@
 
   .actions-container button {
     border: none;
-    background-color: rgb(104, 104, 255);
+    background-color: var(--secondary-500);
     cursor: pointer;
     padding: 8px 10px;
     border-radius: 6px;
-    color: white;
+    color: var(--base-50);
   }
 
   .actions-container button:hover {
-    background-color: rgb(92, 92, 238);
+    background-color: var(--secondary-600);
   }
 
   .actions-container button:disabled  {
-    background-color: rgb(153, 153, 247);
+    background-color: var(--secondary-200);
   }
 </style>
