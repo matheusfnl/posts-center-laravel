@@ -1,6 +1,6 @@
 import type { App } from 'vue';
-import { bus } from './bus-emitter';
-import type ModalParams from '../interfaces/modal-params';
+import { bus } from '@/plugins/bus-emitter';
+import type ModalParams from '@/interfaces/modal-params';
 
 export default {
   install: (app: App) => {

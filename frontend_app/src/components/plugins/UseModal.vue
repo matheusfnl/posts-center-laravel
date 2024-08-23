@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { onMounted, ref } from 'vue'
   import { bus } from '@/plugins/bus-emitter';
-  import type ModalParams from '../../interfaces/modal-params';
+  import type ModalParams from '@/interfaces/modal-params';
 
   const show_modal = ref(false);
   const modal_props = ref({});

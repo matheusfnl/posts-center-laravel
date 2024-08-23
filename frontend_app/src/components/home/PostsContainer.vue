@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { ref, computed, getCurrentInstance } from 'vue';
-  import PostItem from './PostItem.vue'
+  import PostItem from '@/components/home/PostItem.vue'
+  import PostModal from '@/components/home/modals/PostModal.vue';
+  import LoginModal from '@/components/modals/LoginModal.vue';
 
   // Filter
   const active_filter = ref('newest');
@@ -33,10 +35,10 @@
   const getActivePage = (page: number) => page === active_page.value;
 
   // Add posts
-  const { proxy } = getCurrentInstance();
+  const { proxy } = getCurrentInstance() || {};
 
-  const handleAddPost = () => proxy.$modal.open({
-    component: {},
+  const handleAddPost = () => proxy?.$modal.open({
+    component: LoginModal,
     props: {}
   });
 </script>
