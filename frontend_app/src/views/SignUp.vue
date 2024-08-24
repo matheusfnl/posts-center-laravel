@@ -38,7 +38,7 @@
         <span>
           Have an account?
 
-          <router-link to="/">Sign in.</router-link>
+          <router-link to="/#loginmodal">Sign in.</router-link>
         </span>
       </div>
     </div>
