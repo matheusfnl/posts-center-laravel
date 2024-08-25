@@ -14,7 +14,7 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = ['title', 'description', 'user_id'];
-    protected $appends = ['vote', 'upvotes_qtd', 'downvotes_qtd'];
+    protected $appends = ['vote', 'upvotes_qtd', 'downvotes_qtd', 'comments_qtd'];
 
     public function users(): BelongsTo
     {
@@ -51,5 +51,10 @@ class Post extends Model
     public function getDownvotesQtdAttribute()
     {
         return $this->postVotes()->where('vote_type', 'downvote')->count();
+    }
+
+    public function getCommentsQtdAttribute()
+    {
+        return $this->comments()->count();
     }
 }

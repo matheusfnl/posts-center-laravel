@@ -18,9 +18,33 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Post::latest()->paginate();
+        $sort = $request->query('sort');
+        $query = Post::query()->withCount([
+            'postVotes as upvotes_qtd' => fn($query) => $query->where('vote_type', 'upvote'),
+            'postVotes as downvotes_qtd' => fn($query) => $query->where('vote_type', 'downvote'),
+        ]);
+
+        switch ($sort) {
+            case 'positive':
+                $query->orderByRaw('upvotes_qtd - downvotes_qtd DESC');
+                break;
+            case 'negative':
+                $query->orderByRaw('downvotes_qtd - upvotes_qtd DESC');
+                break;
+            case 'popular':
+                $query->orderByRaw('downvotes_qtd - upvotes_qtd DESC');
+                break;
+            case 'answered':
+                $query->withCount('comments')->orderBy('comments_count', 'desc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        return $query->paginate();
     }
 
     /**
