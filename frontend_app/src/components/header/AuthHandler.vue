@@ -38,9 +38,7 @@
 </script>
 
 <template>
-  <component class="auth-icon" :is="getIcon" @click="handleClick">
-    asdasd
-  </component>
+  <component class="auth-icon" :is="getIcon" @click="handleClick" />
 </template>
 
 <style scoped>
