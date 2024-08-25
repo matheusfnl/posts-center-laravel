@@ -1,6 +1,15 @@
 <script lang="ts" setup>
+  import { getCurrentInstance } from 'vue';
+
+  import PostModal from '@/components/home/modals/PostModal.vue';
+
   import UpIcon from '@/icons/UpIcon.vue';
   import DownIcon from '@/icons/DownIcon.vue';
+
+  const { proxy } = getCurrentInstance() || {};
+
+  const handleEditPost = () => proxy?.$modal?.open({ component: PostModal });
+  const handleAddPost = () => proxy?.$modal?.open({ component: PostModal });
 </script>
 
 <template>
@@ -25,11 +34,11 @@
       </div>
 
       <div class="actions-container">
-        <button class="secondary-button">
+        <button class="primary-button" @click="handleEditPost">
           Edit post
         </button>
 
-        <button class="primary-button">
+        <button class="secondary-button" @click="handleAddPost">
           Add post
         </button>
       </div>

@@ -14,7 +14,6 @@
 
   const getActiveFilter = (filter: String) => active_filter.value === filter;
 
-  // Pages
   const active_page = ref(1);
   const total_pages = ref(10);
   const hasPrevButton =  computed(() => active_page.value > 1);
@@ -32,10 +31,7 @@
   })
 
   const getActivePage = (page: number) => page === active_page.value;
-
-  // Add posts
   const { proxy } = getCurrentInstance() || {};
-
   const handleAddPost = () => proxy?.$modal?.open({ component: PostModal });
 </script>
 
