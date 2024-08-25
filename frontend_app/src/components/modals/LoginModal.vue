@@ -40,7 +40,7 @@
       <span>
         Don't have an account?
 
-        <button @click="handleSignUp">Create one.</button>
+        <button class="primary-link-button" @click="handleSignUp">Create one.</button>
       </span>
     </div>
   </div>
@@ -82,25 +82,5 @@
     justify-content: center;
     font-size: 12px;
     color: var(--base-800);
-  }
-
-  .extra-options button {
-    cursor: pointer;
-    color: var(--primary-500);
-    text-decoration: none;
-    background-color: transparent;
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-
-  .extra-options button:focus {
-    border: none;
-    outline: none;
-  }
-
-  .extra-options button:hover {
-    color: var(--primary-600);
-    text-decoration: underline;
   }
 </style>

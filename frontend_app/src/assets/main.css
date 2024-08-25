@@ -108,3 +108,23 @@ input, textarea {
   border-radius: 6px;
   color: var(--base-50);
 }
+
+.primary-link-button:focus {
+  border: none;
+  outline: none;
+}
+
+.primary-link-button:hover {
+  color: var(--primary-600);
+  text-decoration: underline;
+}
+
+.primary-link-button {
+  cursor: pointer;
+  color: var(--primary-500);
+  text-decoration: none;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
