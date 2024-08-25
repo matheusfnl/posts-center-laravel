@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
+import PostsContainer from '@/components/home/PostsContainer.vue';
 import SignUp from '@/views/SignUp.vue'
 import PostShow from '@/views/PostShow.vue'
 
@@ -9,7 +9,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: PostsContainer
     },
 
     {
