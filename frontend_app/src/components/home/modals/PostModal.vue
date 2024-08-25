@@ -30,7 +30,7 @@
     </div>
 
     <div class="actions-container">
-      <button @click="handleAddPost" :disabled="! title || description.length < 20">
+      <button class="secondary-button" :disabled="! title || description.length < 20">
         Add post
       </button>
     </div>
@@ -68,14 +68,6 @@
     padding: 8px;
   }
 
-  .input-container input { height: 28px; }
-  .input-container input, .input-container textarea {
-    border: 1px solid var(--base-200);
-    border-radius: 4px;
-    font-size: 12px;
-    resize: none;
-  }
-
   .input-container span {
     font-size: 10px;
     color: var(--base-900);
@@ -88,22 +80,5 @@
   .actions-container {
     display: flex;
     justify-content: flex-end;
-  }
-
-  .actions-container button {
-    border: none;
-    background-color: var(--secondary-500);
-    cursor: pointer;
-    padding: 8px 10px;
-    border-radius: 6px;
-    color: var(--base-50);
-  }
-
-  .actions-container button:hover {
-    background-color: var(--secondary-600);
-  }
-
-  .actions-container button:disabled  {
-    background-color: var(--secondary-200);
   }
 </style>

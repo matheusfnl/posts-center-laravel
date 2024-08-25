@@ -25,11 +25,11 @@
       </div>
 
       <div class="actions-container">
-        <button class="edit">
+        <button class="secondary-button">
           Edit post
         </button>
 
-        <button class="add">
+        <button class="primary-button">
           Add post
         </button>
       </div>
@@ -122,16 +122,6 @@
     gap: 10px;
   }
 
-  .post-header .actions-container button {
-    border: none;
-    background-color: var(--secondary-500);
-    cursor: pointer;
-    padding: 8px 10px;
-    border-radius: 6px;
-    color: var(--base-50);
-  }
-
-  .post-header .actions-container button.edit { background-color: var(--primary-500); }
   .post-body {
     margin-top: 32px;
     font-size: 12px;
@@ -143,13 +133,7 @@
     gap: 10px;
   }
 
-  .answer-form-container textarea {
-    border: 1px solid var(--base-200);
-    border-radius: 4px;
-    font-size: 12px;
-    resize: vertical;
-  }
-
+  .answer-form-container textarea { resize: vertical; }
   .answers-wrapper {
     margin-top: 32px;
     display: flex;

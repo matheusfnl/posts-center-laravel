@@ -37,6 +37,8 @@
   --backdrop: rgba(255, 255, 255, 0.05);
 }
 
+/* App style */
+
 body {
   margin: 0;
   padding: 0;
@@ -55,13 +57,54 @@ body * {
   color: var(--text-500);
 }
 
+/* Dark theme individualities */
+
 .dark-theme textarea,
 .dark-theme input {
   background-color: var(--base-100);
 }
 
+/* Miscellaneous */
+
 button:focus, textarea:focus, input:focus {
   outline: 2px solid var(--primary-500);
   outline-offset: 0px;
   border-color: transparent !important;
+}
+
+/* Inputs */
+
+input[type="text"], input[type="password"] { height: 28px; }
+input, textarea {
+  border: 1px solid var(--base-200);
+  border-radius: 4px;
+  font-size: 12px;
+  resize: none;
+}
+
+/* Buttons */
+
+.secondary-button:disabled {
+  background-color: var(--secondary-200);
+  cursor: default;
+}
+
+.secondary-button:not(:disabled):hover { background-color: var(--secondary-600); }
+.secondary-button {
+  border: none;
+  background-color: var(--secondary-500);
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--base-50);
+}
+
+.primary-button:not(:disabled):hover { background-color: var(--primary-600); }
+.primary-button {
+  border: none;
+  background-color: var(--primary-500);
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--base-50);
 }
