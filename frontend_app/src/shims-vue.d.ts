@@ -1,4 +1,4 @@
-import { ModalParams } from '@/interfaces/modal-params'; // ajuste o caminho conforme necessário
+import { ModalParams } from '@/interfaces/modal-params';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
