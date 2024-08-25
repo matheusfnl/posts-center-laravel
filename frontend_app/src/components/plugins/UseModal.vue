@@ -5,6 +5,7 @@
   import type ModalParams from '@/interfaces/modal-params';
   import LoginModal from '@/components/modals/LoginModal.vue';
 
+  const route = useRoute();
   const show_modal = ref(false);
   const modal_props = ref({});
   const modal_component = ref({});
@@ -24,8 +25,6 @@
 
     bus.on('close-modal', handleClose);
   });
-
-  const route = useRoute();
 
   watch(route, value => {
     handleClose();

@@ -1,4 +1,4 @@
 export default interface ModalParams {
-  component: Object;
-  props?: Object;
+  component: object;
+  props?: object;
 }

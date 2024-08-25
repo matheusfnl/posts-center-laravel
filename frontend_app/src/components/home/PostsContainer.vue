@@ -1,26 +1,44 @@
 <script setup lang="ts">
-  import { ref, computed, getCurrentInstance } from 'vue';
+  import { ref, computed, getCurrentInstance, onMounted } from 'vue';
+
+  import type Resource from '@/interfaces/resource';
+
   import PostItem from '@/components/home/PostItem.vue'
   import PostModal from '@/components/home/modals/PostModal.vue';
 
+  import Spinner from '@/shared/SpinnerFeedback.vue';
+
+  import { fetchPosts } from '@/api/fetchPosts';
+
+  const { proxy } = getCurrentInstance() || {};
+
   // Filter
-  const active_filter = ref('newest');
+
+  const active_filter = ref('');
   const filters = ref([
-    { value: 'newest', name: 'Newest' },
+    { value: '', name: 'Newest' },
+    { value: 'popular', name: 'Popular' },
     { value: 'positive', name: 'Positive' },
     { value: 'negative', name: 'Negative' },
     { value: 'answered', name: 'Answered' }
   ]);
 
-  const getActiveFilter = (filter: String) => active_filter.value === filter;
+  const getActiveFilter = (filter: string) => active_filter.value === filter;
+  const setFilter = (filter: string) => {
+    active_filter.value = filter;
+    fetchPostsData();
+  };
 
-  const active_page = ref(1);
-  const total_pages = ref(10);
-  const hasPrevButton =  computed(() => active_page.value > 1);
-  const hasNextButton  = computed(() => active_page.value < total_pages.value);
+  // Pagination
+
+  const request_pending = ref(false);
+
+  const hasFirstButton = computed(() => posts_data.value.current_page > 3);
+  const hasPrevButton =  computed(() => posts_data.value.current_page > 1);
+  const hasNextButton  = computed(() => posts_data.value.current_page < posts_data.value.last_page);
   const getAvailablePages = computed(() => {
-    const start = Math.max(1, active_page.value - 2);
-    const end = Math.min(total_pages.value, active_page.value + 2);
+    const start = Math.max(1, posts_data.value.current_page - 2);
+    const end = Math.min(posts_data.value.last_page, posts_data.value.current_page + 2);
     const pages = [];
 
     for (let i = start; i <= end; i++) {
@@ -30,9 +48,25 @@
     return pages;
   })
 
-  const getActivePage = (page: number) => page === active_page.value;
-  const { proxy } = getCurrentInstance() || {};
+  const getActivePage = (page: number) => page === posts_data.value.current_page;
+  const fetchPostsData = async (page = 1) => {
+    request_pending.value = true;
+    posts_data.value = await fetchPosts({
+      page,
+      sort: active_filter.value,
+    });
+
+    request_pending.value = false;
+  }
+
+  // Post
+
+  const posts_data = ref({} as Resource);
   const handleAddPost = () => proxy?.$modal?.open({ component: PostModal });
+
+  // Mounted
+
+  onMounted(() => fetchPostsData())
 </script>
 
 <template>
@@ -54,42 +88,54 @@
         </button>
 
         <div class="filters-container">
-          <button v-for="(filter, index) in filters" :key="index" :class="{ 'active' : getActiveFilter(filter.value) }">
+          <button v-for="(filter, index) in filters" :key="index" :class="{ 'active' : getActiveFilter(filter.value) }" @click="setFilter(filter.value)">
             {{ filter.name }}
           </button>
         </div>
       </div>
     </div>
 
-    <div class="posts-container">
-      <PostItem />
-      <PostItem />
-    </div>
+    <Spinner v-if="request_pending" />
 
-    <div class="pages-container">
-      <button v-if="hasPrevButton">
-        Prev
-      </button>
+    <template v-else>
+      <div class="posts-container">
+        <PostItem v-for="post in posts_data.data" :key="post.id" :post="post" />
+      </div>
 
-      <button v-for="page in getAvailablePages" :key="page" :class="{ 'active' : getActivePage(page) }">
-        {{ page }}
-      </button>
+      <div class="pages-container">
+        <button @click="fetchPostsData(1)" v-if="hasFirstButton">
+          Start
+        </button>
 
-      <button v-if="hasNextButton">
-        Next
-      </button>
-    </div>
+        <button @click="fetchPostsData(posts_data.current_page - 1)" v-if="hasPrevButton">
+          Prev
+        </button>
+
+        <button @click="fetchPostsData(page)" v-for="page in getAvailablePages" :key="page" :class="{ 'active' : getActivePage(page) }">
+          {{ page }}
+        </button>
+
+        <template v-if="hasNextButton">
+          <button @click="fetchPostsData(posts_data.current_page + 1)">
+            Next
+          </button>
+
+          <button @click="fetchPostsData(posts_data.last_page)">
+            End
+          </button>
+        </template>
+      </div>
+    </template>
   </div>
 </template>
 
 <style scoped>
   .posts-wrapper {
+    margin: 32px auto;
     max-width: 756px;
-    margin: auto;
   }
 
   .posts-header {
-    margin-top: 32px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -130,6 +176,11 @@
 
   .posts-header .filters-wrapper .filters-container button:hover {
     background-color: var(--base-400);
+  }
+
+  .posts-header .filters-wrapper .filters-container button:focus {
+    border: none;
+    outline: none;
   }
 
   .posts-header .filters-wrapper .filters-container button.active {

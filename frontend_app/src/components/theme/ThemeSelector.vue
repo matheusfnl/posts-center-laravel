@@ -4,6 +4,7 @@
   import MoonIcon from '@/icons/MoonIcon.vue';
 
   const dark_theme_enabled = ref(false);
+
   const getThemeIcon = computed(() => {
     if (dark_theme_enabled.value) {
       return SunIcon;
@@ -13,8 +14,6 @@
   });
 
   const toggleTheme = () => {
-    console.log('aqui')
-
     if (dark_theme_enabled.value) {
       dark_theme_enabled.value = false;
       localStorage.setItem('@dark-theme', '0');

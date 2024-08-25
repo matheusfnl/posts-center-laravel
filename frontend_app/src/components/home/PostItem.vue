@@ -1,20 +1,24 @@
-<script setup lang="ts" />
+<script setup lang="ts">
+  import type Post from '@/interfaces/post';
+
+  const props = defineProps<{ post: Post }>();
+</script>
 
 <template>
   <div class="post-container">
     <div class="post-info">
-      <span>0 Upvotes</span>
-      <span>0 Downvotes</span>
-      <span>0 Comments</span>
+      <span>{{ props.post.upvotes_qtd || 0 }} Upvotes</span>
+      <span>{{ props.post.downvotes_qtd || 0 }} Downvotes</span>
+      <span>{{ props.post.comments_qtd || 0 }} Comments</span>
     </div>
 
     <div class="post-content">
       <router-link to="/post/id" class="title">
-        Title
+        {{ props.post.title }}
       </router-link>
 
       <span class="description">
-        Description
+        {{ props.post.description }}
       </span>
     </div>
   </div>
@@ -36,6 +40,7 @@
     gap: 4px;
     font-weight: 300;
     font-size: 12px;
+    min-width: 100px;
   }
 
   .post-content {

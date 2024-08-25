@@ -3,6 +3,7 @@ import '@/assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import modalPlugin from '@/plugins/modal'
+import './plugins/axios';
 
 import App from '@/App.vue'
 import router from '@/router'
