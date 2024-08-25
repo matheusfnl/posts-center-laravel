@@ -1,19 +1,9 @@
 <script setup lang="ts">
-  import { ref, getCurrentInstance } from 'vue';
-  import { useRouter } from 'vue-router';
-  import LoginModal from '@/components/modals/LoginModal.vue';
+  import { ref } from 'vue';
 
   const username = ref('');
   const password = ref('');
   const confirmation_password = ref('');
-
-  const { proxy } = getCurrentInstance() || {};
-  const router = useRouter()
-
-  const handleSignIn = () => {
-    proxy?.$modal?.open({ component: LoginModal });
-    router.push('/');
-  };
 </script>
 
 <template>
@@ -48,7 +38,7 @@
         <span>
           Have an account?
 
-          <button class="primary-link-button" @click="handleSignIn">Sign in.</button>
+          <router-link class="primary-link-button" to="/#login">Sign in.</router-link>
         </span>
       </div>
     </div>
@@ -91,12 +81,5 @@
   .actions-container button {
     width: 100%;
     font-weight: 500;
-  }
-
-  .extra-options {
-    display: flex;
-    justify-content: center;
-    font-size: 12px;
-    color: var(--base-800);
   }
 </style>

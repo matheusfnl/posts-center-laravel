@@ -1,7 +1,9 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
+  import { useRoute } from 'vue-router';
   import { bus } from '@/plugins/bus-emitter';
   import type ModalParams from '@/interfaces/modal-params';
+  import LoginModal from '@/components/modals/LoginModal.vue';
 
   const show_modal = ref(false);
   const modal_props = ref({});
@@ -21,6 +23,17 @@
     });
 
     bus.on('close-modal', handleClose);
+  });
+
+  const route = useRoute();
+
+  watch(route, value => {
+    handleClose();
+
+    if (value.hash === '#login') {
+      show_modal.value = true;
+      return modal_component.value = LoginModal;
+    }
   });
 </script>
 
