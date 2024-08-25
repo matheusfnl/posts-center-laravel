@@ -34,7 +34,7 @@ class PostController extends Controller
                 $query->orderByRaw('downvotes_qtd - upvotes_qtd DESC');
                 break;
             case 'popular':
-                $query->orderByRaw('downvotes_qtd - upvotes_qtd DESC');
+                $query->orderByRaw('downvotes_qtd + upvotes_qtd DESC');
                 break;
             case 'answered':
                 $query->withCount('comments')->orderBy('comments_count', 'desc');
