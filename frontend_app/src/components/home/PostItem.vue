@@ -9,9 +9,9 @@
     </div>
 
     <div class="post-content">
-      <a href="#" class="title">
+      <router-link to="/post/id" class="title">
         Title
-      </a>
+      </router-link>
 
       <span class="description">
         Description

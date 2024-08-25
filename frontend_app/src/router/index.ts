@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import SignUp from '@/views/SignUp.vue'
+import PostShow from '@/views/PostShow.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,12 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: SignUp,
+    },
+
+    {
+      path: '/post/id',
+      name: 'posts-show',
+      component: PostShow,
     }
   ]
 })

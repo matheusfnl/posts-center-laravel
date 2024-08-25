@@ -2,7 +2,6 @@
   import { ref, computed, getCurrentInstance } from 'vue';
   import PostItem from '@/components/home/PostItem.vue'
   import PostModal from '@/components/home/modals/PostModal.vue';
-  import LoginModal from '@/components/modals/LoginModal.vue';
 
   // Filter
   const active_filter = ref('newest');
@@ -38,7 +37,7 @@
   const { proxy } = getCurrentInstance() || {};
 
   const handleAddPost = () => proxy?.$modal?.open({
-    component: LoginModal,
+    component: PostModal,
     props: {}
   });
 </script>
