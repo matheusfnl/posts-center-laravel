@@ -78,7 +78,7 @@
         </span>
 
         <span class="info">
-          469 results
+          {{ posts_data.total || 0 }} results
         </span>
       </div>
 
@@ -95,7 +95,7 @@
       </div>
     </div>
 
-    <Spinner v-if="request_pending" />
+    <Spinner class="spinner-icon" v-if="request_pending" />
 
     <template v-else>
       <div class="posts-container">
@@ -215,5 +215,10 @@
     background-color: var(--primary-500);
     color: var(--base-50);
     border: none;
+  }
+
+  .spinner-icon {
+    margin: 32px 0;
+    fill: var(--primary-500);
   }
 </style>

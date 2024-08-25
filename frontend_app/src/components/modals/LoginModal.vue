@@ -2,8 +2,13 @@
   import { ref, getCurrentInstance } from 'vue';
   import { useRouter } from 'vue-router';
 
-  const username = ref('');
+  import Spinner from '@/shared/SpinnerFeedback.vue';
+
+  import { login } from '@/api/login';
+
+  const email = ref('');
   const password = ref('');
+  const request_pending = ref(false);
 
   const { proxy } = getCurrentInstance() || {};
   const router = useRouter()
@@ -11,6 +16,19 @@
   const handleSignUp = () => {
     proxy?.$modal?.close();
     router.push('/register');
+  };
+
+  const handleLogin = async () => {
+    request_pending.value = true;
+
+    await login({
+      email: email.value,
+      password: password.value,
+    });
+
+    request_pending.value = false;
+    proxy?.$modal?.close();
+    proxy?.$auth?.login();
   };
 </script>
 
@@ -21,8 +39,8 @@
     </div>
 
     <div class="input-container">
-      <label for="username">Username</label>
-      <input name="username" type="text" v-model="username" />
+      <label for="email">Email</label>
+      <input name="email" type="text" v-model="email" />
     </div>
 
     <div class="input-container">
@@ -31,8 +49,9 @@
     </div>
 
     <div class="actions-container">
-      <button class="secondary-button">
-        Sign in
+      <button class="secondary-button" @click="handleLogin">
+        <Spinner :size="16" class="spinner-icon" v-if="request_pending" />
+        <template v-else>Sign in</template>
       </button>
     </div>
 
@@ -83,4 +102,6 @@
     font-size: 12px;
     color: var(--base-800);
   }
+
+  .spinner-icon { fill: var(--base-50); }
 </style>

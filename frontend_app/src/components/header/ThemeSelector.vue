@@ -43,9 +43,6 @@
 
 <style scoped>
   .theme-selector {
-    position: absolute;
-    top: 16px;
-    right: 16px;
     display: flex;
     justify-content: center;
     align-items: center;

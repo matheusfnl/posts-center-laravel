@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import Modal from '@/components/plugins/UseModal.vue';
-  import ThemeSelector from '@/components/theme/ThemeSelector.vue';
+  import Appheader from '@/components/header/AppHeader.vue';
 </script>
 
 <template>
   <div>
     <Modal />
-    <ThemeSelector />
+    <Appheader />
     <main class="main-app">
       <RouterView />
     </main>

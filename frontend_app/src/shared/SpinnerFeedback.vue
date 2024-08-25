@@ -15,24 +15,21 @@
   </div>
 </template>
 
-
 <style scoped>
   .spinner-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 32px 0;
   }
 
   .spinner {
     animation: spin-scale .8s linear infinite;
     transition: transform .5s linear ;
-    fill: var(--primary-500);;
   }
 
   @keyframes spin-scale {
     0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.2); }
+    50% { transform: rotate(180deg) scale(1.1); }
     100% { transform: rotate(360deg) scale(1); }
   }
 </style>

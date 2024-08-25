@@ -6,5 +6,10 @@ declare module '@vue/runtime-core' {
       open: (modalParams: ModalParams) => void;
       close: () => void;
     };
+
+    $auth: {
+      login: () => void;
+      logout: () => void;
+    };
   }
 }
