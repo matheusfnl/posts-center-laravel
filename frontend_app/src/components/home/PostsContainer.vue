@@ -5,6 +5,7 @@
 
   import PostItem from '@/components/home/PostItem.vue'
   import PostModal from '@/components/home/modals/PostModal.vue';
+  import LoginModal from '@/components/modals/LoginModal.vue';
 
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
@@ -62,7 +63,12 @@
   // Post
 
   const posts_data = ref({} as Resource);
-  const handleAddPost = () => proxy?.$modal?.open({ component: PostModal });
+  const handleAddPost = () => {
+    const token = localStorage.getItem('@auth');
+    const modal_component = token ? PostModal : LoginModal;
+
+    proxy?.$modal?.open({ component: modal_component });
+  };
 
   // Mounted
 
