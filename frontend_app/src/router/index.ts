@@ -19,7 +19,7 @@ const router = createRouter({
     },
 
     {
-      path: '/post/id',
+      path: '/post/:id',
       name: 'posts-show',
       component: PostShow,
     }

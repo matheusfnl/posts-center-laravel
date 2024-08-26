@@ -1,7 +1,10 @@
 <script setup lang="ts">
+  import { computed } from 'vue';
+
   import type Post from '@/interfaces/post';
 
   const props = defineProps<{ post: Post }>();
+  const getPostRoute = computed(() => `/post/${props.post.id}`);
 </script>
 
 <template>
@@ -13,7 +16,7 @@
     </div>
 
     <div class="post-content">
-      <router-link to="/post/id" class="title">
+      <router-link :to="getPostRoute" class="title">
         {{ props.post.title }}
       </router-link>
 

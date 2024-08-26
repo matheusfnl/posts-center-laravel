@@ -1,17 +1,18 @@
 <script setup lang="ts">
   import { ref, computed, getCurrentInstance, onMounted } from 'vue';
 
-  import type Resource from '@/interfaces/resource';
-
   import PostItem from '@/components/home/PostItem.vue'
   import PostModal from '@/components/home/modals/PostModal.vue';
   import LoginModal from '@/components/modals/LoginModal.vue';
+
+  import { usePostsStore } from '@/stores/posts';
 
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
   import { fetchPosts } from '@/api/fetchPosts';
 
   const { proxy } = getCurrentInstance() || {};
+  const postsStore = usePostsStore();
 
   // Filter
 
@@ -34,12 +35,12 @@
 
   const request_pending = ref(false);
 
-  const hasFirstButton = computed(() => posts_data.value.current_page > 3);
-  const hasPrevButton =  computed(() => posts_data.value.current_page > 1);
-  const hasNextButton  = computed(() => posts_data.value.current_page < posts_data.value.last_page);
+  const hasFirstButton = computed(() => getPosts.value.current_page > 3);
+  const hasPrevButton =  computed(() => getPosts.value.current_page > 1);
+  const hasNextButton  = computed(() => getPosts.value.current_page < getPosts.value.last_page);
   const getAvailablePages = computed(() => {
-    const start = Math.max(1, posts_data.value.current_page - 2);
-    const end = Math.min(posts_data.value.last_page, posts_data.value.current_page + 2);
+    const start = Math.max(1, getPosts.value.current_page - 2);
+    const end = Math.min(getPosts.value.last_page, getPosts.value.current_page + 2);
     const pages = [];
 
     for (let i = start; i <= end; i++) {
@@ -49,20 +50,21 @@
     return pages;
   })
 
-  const getActivePage = (page: number) => page === posts_data.value.current_page;
+  const getActivePage = (page: number) => page === getPosts.value.current_page;
   const fetchPostsData = async (page = 1) => {
     request_pending.value = true;
-    posts_data.value = await fetchPosts({
+    const posts = await fetchPosts({
       page,
       sort: active_filter.value,
     });
 
+    postsStore.setPosts(posts);
     request_pending.value = false;
   }
 
   // Post
 
-  const posts_data = ref({} as Resource);
+  const getPosts = computed(() => postsStore.posts);
   const handleAddPost = () => {
     const token = localStorage.getItem('@auth');
     const modal_component = token ? PostModal : LoginModal;
@@ -84,7 +86,7 @@
         </span>
 
         <span class="info">
-          {{ posts_data.total || 0 }} results
+          {{ getPosts.total || 0 }} results
         </span>
       </div>
 
@@ -105,7 +107,7 @@
 
     <template v-else>
       <div class="posts-container">
-        <PostItem v-for="post in posts_data.data" :key="post.id" :post="post" />
+        <PostItem v-for="post in getPosts.data" :key="post.id" :post="post" />
       </div>
 
       <div class="pages-container">
@@ -113,7 +115,7 @@
           Start
         </button>
 
-        <button @click="fetchPostsData(posts_data.current_page - 1)" v-if="hasPrevButton">
+        <button @click="fetchPostsData(getPosts.current_page - 1)" v-if="hasPrevButton">
           Prev
         </button>
 
@@ -122,11 +124,11 @@
         </button>
 
         <template v-if="hasNextButton">
-          <button @click="fetchPostsData(posts_data.current_page + 1)">
+          <button @click="fetchPostsData(getPosts.current_page + 1)">
             Next
           </button>
 
-          <button @click="fetchPostsData(posts_data.last_page)">
+          <button @click="fetchPostsData(getPosts.last_page)">
             End
           </button>
         </template>

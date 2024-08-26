@@ -1,8 +1,6 @@
-import type Post from './post';
-
 export default interface Resource {
   current_page: number,
-  data: Post[],
+  data: any[],
   first_page_url: string,
   from: number,
   last_page: number,
