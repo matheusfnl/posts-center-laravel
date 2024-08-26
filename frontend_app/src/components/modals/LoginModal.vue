@@ -6,6 +6,9 @@
 
   import { login } from '@/api/login';
 
+  import { useAuthStore } from '@/stores/auth';
+
+  const authStore = useAuthStore();
   const email = ref('');
   const password = ref('');
   const request_pending = ref(false);
@@ -21,12 +24,13 @@
   const handleLogin = async () => {
     request_pending.value = true;
 
-    await login({
+    const user = await login({
       email: email.value,
       password: password.value,
     });
 
     request_pending.value = false;
+    authStore.setUser(user);
     proxy?.$modal?.close();
     proxy?.$auth?.login();
   };

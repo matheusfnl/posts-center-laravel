@@ -18,6 +18,8 @@
 
   onMounted(() => {
     bus.on('open-modal', (modal_params: ModalParams) => {
+      console.log(modal_params);
+
       show_modal.value = true;
       modal_props.value = modal_params.props || {};
       modal_component.value = modal_params.component;

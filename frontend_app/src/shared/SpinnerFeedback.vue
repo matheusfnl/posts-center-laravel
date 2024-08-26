@@ -20,6 +20,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    fill: var(--primary-500);
   }
 
   .spinner {

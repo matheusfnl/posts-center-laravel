@@ -1,93 +1,143 @@
 <script lang="ts" setup>
-  import { getCurrentInstance } from 'vue';
+  import { ref, getCurrentInstance, onMounted, computed } from 'vue';
+  import { useRoute } from 'vue-router';
 
   import PostModal from '@/components/home/modals/PostModal.vue';
+  import Spinner from '@/shared/SpinnerFeedback.vue';
+
+  import { useAuthStore } from '@/stores/auth';
 
   import UpIcon from '@/icons/UpIcon.vue';
   import DownIcon from '@/icons/DownIcon.vue';
 
-  const { proxy } = getCurrentInstance() || {};
+  import { fetchPost } from '@/api/fetchPost';
 
-  const handleEditPost = () => proxy?.$modal?.open({ component: PostModal });
-  const handleAddPost = () => proxy?.$modal?.open({ component: PostModal });
+  import type Post from '@/interfaces/post';
+
+  const { proxy } = getCurrentInstance() || {};
+  const route = useRoute();
+  const authStore = useAuthStore();
+
+  const post = ref({} as Post)
+  const request_pending = ref(false);
+
+  const formatDate = (date_string: string) => {
+    const date = new Date(date_string);
+
+    if (isNaN(date.getTime())) {
+      return 'N/A';
+    }
+
+    const date_part = date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
+    const time_part = date.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return `${date_part} ${time_part}`;
+  };
+
+  const handleEditPost = () => proxy?.$modal?.open({
+    component: PostModal,
+    props: {
+      edit_post: post.value,
+      edit_action: handleEdited,
+    }
+  });
+
+  const handleEdited = (new_post: Post) => post.value = new_post;
+
+  const getUser = computed(() => authStore.user);
+  const getCreatedAt = computed(() => formatDate(post.value.created_at));
+  const getUpdatedAt = computed(() => formatDate(post.value.updated_at));
+  const hasChanges = computed(() => post.value.created_at !== post.value.updated_at);
+  const canEditPost = computed(() => post.value.user_id === getUser.value.id);
+
+  onMounted(async () => {
+    request_pending.value = true;
+    post.value = await fetchPost({ id: +route.params.id })
+
+    request_pending.value = false;
+  });
 </script>
 
 <template>
   <div class="post-wrapper">
-    <div class="post-header">
-      <div class="title-header">
-        <span class="title">
-          How to conditionally format non-adjacent cells in Microsoft Excel based on the second highest value
-        </span>
+    <Spinner class="custom-spinner" v-if="request_pending" />
 
-        <div class="post-info">
-          <div class="date-info">
-            <span class="label">Asked</span>
-            <span>Date</span>
-          </div>
+    <template v-else>
+      <div class="post-header">
+        <div class="title-header">
+          <span class="title">
+            {{ post.title }}
+          </span>
 
-          <div class="date-info">
-            <span class="label">Modified</span>
-            <span>Date</span>
+          <div class="post-info">
+            <div class="date-info">
+              <span class="label">Asked</span>
+              <span>{{ getCreatedAt }}</span>
+            </div>
+
+            <div class="date-info" v-if="hasChanges">
+              <span class="label">Modified</span>
+              <span>{{ getUpdatedAt }}</span>
+            </div>
           </div>
+        </div>
+
+        <div class="actions-container" v-if="canEditPost">
+          <button class="secondary-button" @click="handleEditPost">
+            Edit post
+          </button>
         </div>
       </div>
 
-      <div class="actions-container">
-        <button class="primary-button" @click="handleEditPost">
-          Edit post
-        </button>
-
-        <button class="secondary-button" @click="handleAddPost">
-          Add post
-        </button>
+      <div class="post-body">
+        {{ post.description }}
       </div>
-    </div>
 
-    <div class="post-body">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores dolorum, odit alias ipsam facilis modi laboriosam illo ad a vitae, dicta reprehenderit error adipisci nulla ipsum quis iste praesentium perferendis!
-      <br />
-      <br />
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias perferendis iusto soluta doloribus magnam modi id illum laudantium. Doloribus ipsa vero provident blanditiis sint est mollitia unde harum deleniti pariatur!
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, esse! Consequatur, eum maxime aut ipsum architecto cumque, atque assumenda minus rem modi voluptatem! Et tempora omnis vel, reiciendis perferendis tempore.
-    </div>
+      <hr />
 
-    <hr />
+      <div class="answer-form-container">
+        <span>Your response</span>
 
-    <div class="answer-form-container">
-      <span>Your response</span>
+        <textarea name="answer" rows="9" />
+      </div>
 
-      <textarea name="answer" rows="9" />
-    </div>
+      <div class="answers-wrapper">
+        <span>43 responses</span>
 
-    <div class="answers-wrapper">
-      <span>43 responses</span>
+        <div class="answers-container">
+          <div class="answer-item">
+            <div class="answer-content">
+              <span class="name">User name</span>
 
-      <div class="answers-container">
-        <div class="answer-item">
-          <div class="answer-content">
-            <span class="name">User name</span>
-
-            <span class="answer">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque perferendis explicabo temporibus, alias placeat odio maxime optio voluptatibus velit aliquam laborum quam. Iusto quam, in doloribus veritatis ipsum itaque eum.
-              <br />
-              <br />
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta, minus culpa incidunt eos nostrum veritatis quidem, deserunt a neque repellendus modi. Placeat earum cumque sed hic suscipit optio nulla omnis?
-            </span>
-          </div>
-
-          <div class="answer-options">
-            <div class="option">
-              <UpIcon :size="22" />
+              <span class="answer">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque perferendis explicabo temporibus, alias placeat odio maxime optio voluptatibus velit aliquam laborum quam. Iusto quam, in doloribus veritatis ipsum itaque eum.
+                <br />
+                <br />
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta, minus culpa incidunt eos nostrum veritatis quidem, deserunt a neque repellendus modi. Placeat earum cumque sed hic suscipit optio nulla omnis?
+              </span>
             </div>
 
-            <div class="option">
-              <DownIcon :size="22" />
+            <div class="answer-options">
+              <div class="option">
+                <UpIcon :size="22" />
+              </div>
+
+              <div class="option">
+                <DownIcon :size="22" />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -103,6 +153,7 @@
     margin: auto;
   }
 
+  .custom-spinner { margin-top: 32px; }
   .post-header {
     margin-top: 32px;
     display: flex;

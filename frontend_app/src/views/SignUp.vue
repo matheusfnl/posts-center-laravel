@@ -6,6 +6,9 @@
 
   import { register } from '@/api/register';
 
+  import { useAuthStore } from '@/stores/auth';
+
+  const authStore = useAuthStore();
   const { proxy } = getCurrentInstance() || {};
   const router = useRouter()
 
@@ -22,7 +25,7 @@
 
   const handleRegister = async () => {
     request_pending.value = true;
-    await register({
+    const user = await register({
       name: username.value,
       email: email.value,
       password: password.value,
@@ -30,6 +33,7 @@
     });
 
     request_pending.value = false;
+    authStore.setUser(user);
     proxy?.$auth?.login();
     router.push('/');
   };

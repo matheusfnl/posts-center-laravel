@@ -1,41 +1,77 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { getCurrentInstance, computed, onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
 
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
   import { createPost } from '@/api/createPost';
+  import { editPost } from '@/api/editPost';
 
   import { usePostsStore } from '@/stores/posts';
 
   const postsStore = usePostsStore();
+  const { proxy } = getCurrentInstance() || {};
   const router = useRouter()
+  const props = defineProps({
+    edit_post: {
+      type: Object,
+      default: null,
+    },
+
+    edit_action: {
+      type: Function,
+      default: () => {},
+    },
+  });
 
   const title = ref('');
   const description = ref('');
   const request_pending = ref(false);
+
   const createNewPost = async () => {
     request_pending.value = true;
-    const post = await createPost({
-      title: title.value,
-      description: description.value,
-    });
+
+    if (! isEdit.value) {
+      const post = await createPost({
+        title: title.value,
+        description: description.value,
+      });
+
+      if (post !== null) {
+        postsStore.setNewPost(post);
+        router.push(`/post/${post.id}`)
+      }
+    } else {
+      const edited_post = await editPost({
+        id: props.edit_post.id,
+        title: title.value,
+        description: description.value,
+      });
+
+      props.edit_action(edited_post);
+      proxy?.$modal?.close();
+    }
 
     request_pending.value = false;
-
-    if (post !== null) {
-      postsStore.setNewPost(post);
-      router.push(`/post/${post.id}`)
-    }
   };
 
+  const isEdit = computed(() => props.edit_post);
+  const getTitle = computed(() => isEdit.value ? 'Editing a post' : 'Adding a post');
+  const getButtonLabel = computed(() => isEdit.value ? 'Edit post' : 'Add post');
+
+  onMounted(() => {
+    if (isEdit.value) {
+      title.value = props.edit_post.title;
+      description.value = props.edit_post.description;
+    }
+  })
 </script>
 
 <template>
   <div class="posts-modal-container">
     <div class="posts-modal-header">
       <span class="title">
-        Adding a post
+        {{ getTitle }}
       </span>
 
       <span class="description">
@@ -58,7 +94,7 @@
     <div class="actions-container">
       <button class="secondary-button" :disabled="! title || description.length < 20" @click="createNewPost">
         <Spinner :size="16" class="spinner-icon" v-if="request_pending" />
-        <template v-else>Add post</template>
+        <template v-else>{{ getButtonLabel }}</template>
       </button>
     </div>
   </div>

@@ -1,6 +1,24 @@
 <script setup lang="ts">
+  import { onMounted } from 'vue';
+
   import Modal from '@/components/plugins/UseModal.vue';
   import Appheader from '@/components/header/AppHeader.vue';
+
+  import { getUser } from '@/api/getUser';
+
+  import { useAuthStore } from '@/stores/auth';
+
+  const authStore = useAuthStore();
+
+  onMounted(async () => {
+    const token = localStorage.getItem('@auth');
+
+    if (token) {
+      const user = await getUser();
+
+      authStore.setUser(user);
+    }
+  });
 </script>
 
 <template>
