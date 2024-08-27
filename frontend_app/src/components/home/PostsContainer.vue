@@ -4,6 +4,7 @@
   import PostItem from '@/components/home/PostItem.vue'
   import PostModal from '@/components/home/modals/PostModal.vue';
   import LoginModal from '@/components/modals/LoginModal.vue';
+  import UsePagination from '@/components/shared/UsePagination.vue';
 
   import { usePostsStore } from '@/stores/posts';
   import { useAuthStore } from '@/stores/auth';
@@ -36,23 +37,6 @@
   // Pagination
 
   const request_pending = ref(false);
-
-  const hasFirstButton = computed(() => getPosts.value.current_page > 3);
-  const hasPrevButton =  computed(() => getPosts.value.current_page > 1);
-  const hasNextButton  = computed(() => getPosts.value.current_page < getPosts.value.last_page);
-  const getAvailablePages = computed(() => {
-    const start = Math.max(1, getPosts.value.current_page - 2);
-    const end = Math.min(getPosts.value.last_page, getPosts.value.current_page + 2);
-    const pages = [];
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    return pages;
-  })
-
-  const getActivePage = (page: number) => page === getPosts.value.current_page;
   const fetchPostsData = async (page = 1) => {
     request_pending.value = true;
     const posts = await fetchPosts({
@@ -112,29 +96,7 @@
         <PostItem v-for="post in getPosts.data" :key="post.id" :post="post" />
       </div>
 
-      <div class="pages-container">
-        <button @click="fetchPostsData(1)" v-if="hasFirstButton">
-          Start
-        </button>
-
-        <button @click="fetchPostsData(getPosts.current_page - 1)" v-if="hasPrevButton">
-          Prev
-        </button>
-
-        <button @click="fetchPostsData(page)" v-for="page in getAvailablePages" :key="page" :class="{ 'active' : getActivePage(page) }">
-          {{ page }}
-        </button>
-
-        <template v-if="hasNextButton">
-          <button @click="fetchPostsData(getPosts.current_page + 1)">
-            Next
-          </button>
-
-          <button @click="fetchPostsData(getPosts.last_page)">
-            End
-          </button>
-        </template>
-      </div>
+      <UsePagination @fetch="fetchPostsData" :resource="getPosts" />
     </template>
   </div>
 </template>
@@ -201,30 +163,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  .pages-container {
-    margin-top: 8px;
-    display: flex;
-    gap: 4px;
-  }
-
-  .pages-container button {
-    background-color: transparent;
-    cursor: pointer;
-    border: 1px solid var(--base-300);
-    border-radius: 6px;
-    padding: 4px 6px;
-  }
-
-  .pages-container button:hover {
-    background-color: var(--base-400);
-  }
-
-  .pages-container button.active {
-    background-color: var(--primary-500);
-    color: var(--base-50);
-    border: none;
   }
 
   .spinner-icon {

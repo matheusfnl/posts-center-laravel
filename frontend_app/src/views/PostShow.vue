@@ -3,6 +3,7 @@
   import { useRoute } from 'vue-router';
 
   import PostModal from '@/components/home/modals/PostModal.vue';
+  import UsePagination from '@/components/shared/UsePagination.vue';
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
   import { useAuthStore } from '@/stores/auth';
@@ -11,15 +12,19 @@
   import DownIcon from '@/icons/DownIcon.vue';
 
   import { fetchPost } from '@/api/fetchPost';
+  import { fetchPostComments } from '@/api/fetchPostComments';
 
   import type Post from '@/interfaces/post';
+  import type Resource from '@/interfaces/resource';
 
   const { proxy } = getCurrentInstance() || {};
   const route = useRoute();
   const authStore = useAuthStore();
 
   const post = ref({} as Post)
+  const comments = ref({} as Resource);
   const request_pending = ref(false);
+  const comments_request_pending = ref(false);
   const response = ref('');
 
   const formatDate = (date_string: string) => {
@@ -53,16 +58,33 @@
 
   const handleEdited = (new_post: Post) => post.value = new_post;
   const handleResponse = () => {};
+  const fetchCommentsData = async (page = 1) => {
+    comments_request_pending.value = true;
+    comments.value = await fetchPostComments({
+      id: +route.params.id,
+      page,
+    });
+
+    comments_request_pending.value = false;
+  }
 
   const getUser = computed(() => authStore.user);
   const getCreatedAt = computed(() => formatDate(post.value.created_at));
   const getUpdatedAt = computed(() => formatDate(post.value.updated_at));
   const hasChanges = computed(() => post.value.created_at !== post.value.updated_at);
   const canEditPost = computed(() => post.value.user_id === getUser.value?.id);
+  const getCommets = computed(() => comments.value.data || []);
 
   onMounted(async () => {
     request_pending.value = true;
-    post.value = await fetchPost({ id: +route.params.id })
+    const results = await Promise.allSettled([
+      fetchPost({ id: +route.params.id }),
+      fetchCommentsData(),
+    ]);
+
+    if (results[0].status === 'fulfilled') {
+      post.value = results[0].value;
+    }
 
     request_pending.value = false;
   });
@@ -118,32 +140,39 @@
       </div>
 
       <div class="answers-wrapper">
-        <span>43 responses</span>
+        <span>{{ comments.total }} responses</span>
 
-        <div class="answers-container">
-          <div class="answer-item">
-            <div class="answer-content">
-              <span class="name">User name</span>
+        <Spinner class="spinner-icon" v-if="comments_request_pending" />
 
-              <span class="answer">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque perferendis explicabo temporibus, alias placeat odio maxime optio voluptatibus velit aliquam laborum quam. Iusto quam, in doloribus veritatis ipsum itaque eum.
-                <br />
-                <br />
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta, minus culpa incidunt eos nostrum veritatis quidem, deserunt a neque repellendus modi. Placeat earum cumque sed hic suscipit optio nulla omnis?
-              </span>
-            </div>
+        <div class="empty-container" v-else-if="! getCommets.length">
+          Post without comments
+        </div>
 
-            <div class="answer-options">
-              <div class="option">
-                <UpIcon :size="22" />
+        <template v-else>
+          <div class="answers-container">
+            <div class="answer-item" v-for="comment in getCommets" :key="comment.id">
+              <div class="answer-content">
+                <span class="name">User name</span>
+
+                <span class="answer">
+                  {{ comment.description }}
+                </span>
               </div>
 
-              <div class="option">
-                <DownIcon :size="22" />
+              <div class="answer-options">
+                <div class="option">
+                  <UpIcon :size="22" />
+                </div>
+
+                <div class="option">
+                  <DownIcon :size="22" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+
+          <UsePagination @fetch="fetchCommentsData" :resource="comments" />
+        </template>
       </div>
     </template>
   </div>
@@ -208,10 +237,17 @@
   }
 
   .answers-wrapper {
-    margin-top: 32px;
+    margin: 32px 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  .answers-wrapper .empty-container {
+    display: flex;
+    justify-content: center;
+    color: var(--base-800);
+    font-style: italic;
   }
 
   .answers-wrapper .answers-container {
@@ -232,6 +268,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1;
   }
 
   .answers-wrapper .answers-container .answer-item .answer-content .name {
