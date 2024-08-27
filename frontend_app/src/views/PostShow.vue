@@ -20,6 +20,7 @@
 
   const post = ref({} as Post)
   const request_pending = ref(false);
+  const response = ref('');
 
   const formatDate = (date_string: string) => {
     const date = new Date(date_string);
@@ -51,6 +52,7 @@
   });
 
   const handleEdited = (new_post: Post) => post.value = new_post;
+  const handleResponse = () => {};
 
   const getUser = computed(() => authStore.user);
   const getCreatedAt = computed(() => formatDate(post.value.created_at));
@@ -106,7 +108,13 @@
       <div class="answer-form-container">
         <span>Your response</span>
 
-        <textarea name="answer" rows="9" />
+        <textarea name="answer" rows="9" v-model="response" />
+
+        <div class="send-form">
+          <button class="secondary-button" :disabled="! response" @click="handleResponse">
+            Send response
+          </button>
+        </div>
       </div>
 
       <div class="answers-wrapper">
@@ -194,6 +202,11 @@
   }
 
   .answer-form-container textarea { resize: vertical; }
+  .answer-form-container .send-form {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   .answers-wrapper {
     margin-top: 32px;
     display: flex;
