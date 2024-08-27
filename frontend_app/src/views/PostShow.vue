@@ -56,7 +56,7 @@
   const getCreatedAt = computed(() => formatDate(post.value.created_at));
   const getUpdatedAt = computed(() => formatDate(post.value.updated_at));
   const hasChanges = computed(() => post.value.created_at !== post.value.updated_at);
-  const canEditPost = computed(() => post.value.user_id === getUser.value.id);
+  const canEditPost = computed(() => post.value.user_id === getUser.value?.id);
 
   onMounted(async () => {
     request_pending.value = true;

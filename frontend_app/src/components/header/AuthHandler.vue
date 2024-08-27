@@ -6,14 +6,16 @@
   import LogoutIcon from '@/icons/LogoutIcon.vue';
   import UserIcon from '@/icons/UserIcon.vue';
 
+  import { useAuthStore } from '@/stores/auth';
+
   import { logout } from '@/api/logout';
 
   import { bus } from '@/plugins/bus-emitter';
 
   const { proxy } = getCurrentInstance() || {};
+  const authStore = useAuthStore();
 
-  const token = localStorage.getItem('@auth');
-  const logged = ref(!! token);
+  const logged = ref(!! authStore.user?.id);
   const getIcon = computed(() => {
     if (logged.value) {
       return LogoutIcon;

@@ -6,6 +6,8 @@ export const getUser = async () => {
 
     return data;
   } catch (err) {
+    localStorage.setItem('@auth', '');
+
     console.log(err);
   }
 };

@@ -6,6 +6,7 @@
   import LoginModal from '@/components/modals/LoginModal.vue';
 
   import { usePostsStore } from '@/stores/posts';
+  import { useAuthStore } from '@/stores/auth';
 
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
@@ -13,6 +14,7 @@
 
   const { proxy } = getCurrentInstance() || {};
   const postsStore = usePostsStore();
+  const authStore = useAuthStore();
 
   // Filter
 
@@ -66,8 +68,8 @@
 
   const getPosts = computed(() => postsStore.posts);
   const handleAddPost = () => {
-    const token = localStorage.getItem('@auth');
-    const modal_component = token ? PostModal : LoginModal;
+    const user = authStore.user;
+    const modal_component = user?.id ? PostModal : LoginModal;
 
     proxy?.$modal?.open({ component: modal_component });
   };

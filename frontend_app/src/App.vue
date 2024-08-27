@@ -16,7 +16,9 @@
     if (token) {
       const user = await getUser();
 
-      authStore.setUser(user);
+      if (user?.id) {
+        authStore.setUser(user);
+      }
     }
   });
 </script>
