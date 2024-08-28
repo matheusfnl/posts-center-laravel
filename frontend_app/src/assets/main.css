@@ -99,6 +99,19 @@ input, textarea {
   color: var(--base-50);
 }
 
+.skinny-button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--text-500);
+}
+
+.skinny-button:hover { color: var(--base-900); }
+.skinny-button:focus {
+  border: none;
+  outline: none;
+}
+
 .primary-button:not(:disabled):hover { background-color: var(--primary-600); }
 .primary-button {
   border: none;

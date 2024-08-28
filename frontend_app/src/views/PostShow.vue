@@ -4,6 +4,7 @@
 
   import PostModal from '@/components/home/modals/PostModal.vue';
   import UsePagination from '@/components/shared/UsePagination.vue';
+  import UserComment from '@/components/post/UserComment.vue';
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
   import { useAuthStore } from '@/stores/auth';
@@ -15,10 +16,13 @@
   import { fetchPostComments } from '@/api/fetchPostComments';
   import { editVote } from '@/api/editVote';
   import { createVote } from '@/api/createVote';
+  import { createPostComments } from '@/api/createPostComment';
+  import { editPostComment } from '@/api/editPostComment';
 
   import type Post from '@/interfaces/post';
   import type Resource from '@/interfaces/resource';
   import type Vote from '@/interfaces/vote';
+  import type Comment from '@/interfaces/comment';
 
   const { proxy } = getCurrentInstance() || {};
   const route = useRoute();
@@ -28,6 +32,8 @@
   const comments = ref({} as Resource);
   const request_pending = ref(false);
   const comments_request_pending = ref(false);
+  const response_request_pending = ref(false);
+  const editing_id = ref(null as number|null);
   const response = ref('');
   const vote = ref({} as Vote);
 
@@ -61,7 +67,6 @@
   });
 
   const handleEdited = (new_post: Post) => post.value = new_post;
-  const handleResponse = () => {};
   const fetchCommentsData = async (page = 1) => {
     comments_request_pending.value = true;
     comments.value = await fetchPostComments({
@@ -91,12 +96,64 @@
     }
   };
 
+  const handleAddPost = async () => {
+    response_request_pending.value = true;
+
+    if (editing_id.value) {
+      const new_post = await editPostComment({
+        id: +route.params.id,
+        comment_id: editing_id.value,
+        description: response.value,
+      });
+
+      comments.value.data = comments.value.data.map(post => post.id === editing_id.value ? new_post : post);
+      editing_id.value = null;
+    } else {
+      const post = await createPostComments({
+        id: +route.params.id,
+        description: response.value,
+      });
+
+      comments.value.total++;
+      comments.value.data.unshift(post);
+    }
+
+    response.value = '';
+    response_request_pending.value = false;
+  };
+
+  const handleCommentDeleted = (id: number) => {
+    comments.value.total--;
+    comments.value.data = comments.value.data.filter(comment => +comment.id !== id);
+
+    if (editing_id.value === id) {
+      editing_id.value = null;
+      response.value = '';
+    }
+  }
+
+  const handleCommentEdit = (comment: Comment) => {
+    editing_id.value = comment.id;
+    response.value = comment.description;
+  }
+
+  const handleCancelEdit = () => {
+    editing_id.value = null;
+    response.value = '';
+  }
+
   const getUser = computed(() => authStore.user);
   const getCreatedAt = computed(() => formatDate(post.value.created_at));
   const getUpdatedAt = computed(() => formatDate(post.value.updated_at));
   const hasChanges = computed(() => post.value.created_at !== post.value.updated_at);
   const canEditPost = computed(() => post.value.user_id === getUser.value?.id);
   const getCommets = computed(() => comments.value.data || []);
+  const getPostResponseLabel = computed(() => editing_id.value ? 'Edit response' : 'Send response')
+  const postResponseButtonDisabled = computed(() => {
+    return ! response.value ||
+    (editing_id.value && response.value === comments.value.data
+      .find(comment => comment.id === editing_id.value).description);
+  });
 
   onMounted(async () => {
     request_pending.value = true;
@@ -167,8 +224,13 @@
         <textarea name="answer" rows="9" v-model="response" />
 
         <div class="send-form">
-          <button class="secondary-button" :disabled="! response" @click="handleResponse">
-            Send response
+          <button class="skinny-button" v-if="editing_id" @click="handleCancelEdit">
+            Cancel
+          </button>
+
+          <button class="secondary-button response-button" :disabled="postResponseButtonDisabled" @click="handleAddPost">
+            <Spinner :size="16" class="spinner-icon" v-if="response_request_pending" />
+            <template v-else>{{ getPostResponseLabel }}</template>
           </button>
         </div>
       </div>
@@ -176,7 +238,7 @@
       <div class="answers-wrapper">
         <span>{{ comments.total }} responses</span>
 
-        <Spinner class="spinner-icon" v-if="comments_request_pending" />
+        <Spinner v-if="comments_request_pending" />
 
         <div class="empty-container" v-else-if="! getCommets.length">
           Post without comments
@@ -184,12 +246,7 @@
 
         <template v-else>
           <div class="answers-container">
-            <div class="answer-item" v-for="comment in getCommets" :key="comment.id">
-              <div class="answer-content">
-                <span class="name">{{ comment.user_name }}</span>
-                <span class="answer">{{ comment.description }}</span>
-              </div>
-            </div>
+            <UserComment v-for="comment in getCommets" :key="comment.id" :comment="comment" @delete="handleCommentDeleted" @edit="handleCommentEdit" />
           </div>
 
           <UsePagination @fetch="fetchCommentsData" :resource="comments" />
@@ -271,8 +328,10 @@
   .answer-form-container .send-form {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
   }
 
+  .answer-form-container .send-form .response-button { min-width: 115px }
   .answers-wrapper {
     margin: 32px 0;
     display: flex;
@@ -293,25 +352,5 @@
     gap: 10px;
   }
 
-  .answers-wrapper .answers-container .answer-item {
-    border: 1px solid var(--base-300);
-    border-radius: 6px;
-    padding: 16px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .answers-wrapper .answers-container .answer-item .answer-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
-  }
-
-  .answers-wrapper .answers-container .answer-item .answer-content .name {
-    font-size: 14px;
-    color: var(--primary-600)
-  }
-
-  .answers-wrapper .answers-container .answer-item .answer-content .answer { font-size: 12px; }
+  .spinner-icon { fill: var(--base-50); }
 </style>
