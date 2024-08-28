@@ -151,7 +151,7 @@
   const getPostResponseLabel = computed(() => editing_id.value ? 'Edit response' : 'Send response')
   const postResponseButtonDisabled = computed(() => {
     return ! response.value ||
-    (editing_id.value && response.value === comments.value.data
+    !! (editing_id.value && response.value === comments.value.data
       .find(comment => comment.id === editing_id.value).description);
   });
 
