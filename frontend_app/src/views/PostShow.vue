@@ -5,6 +5,7 @@
   import PostModal from '@/components/home/modals/PostModal.vue';
   import UsePagination from '@/components/shared/UsePagination.vue';
   import UserComment from '@/components/post/UserComment.vue';
+  import LoginModal from '@/components/modals/LoginModal.vue';
   import Spinner from '@/shared/SpinnerFeedback.vue';
 
   import { useAuthStore } from '@/stores/auth';
@@ -97,6 +98,10 @@
   };
 
   const handleAddPost = async () => {
+    if (! getUser.value?.id) {
+      return proxy?.$modal?.open({ component: LoginModal })
+    }
+
     response_request_pending.value = true;
 
     if (editing_id.value) {
@@ -106,7 +111,12 @@
         description: response.value,
       });
 
-      comments.value.data = comments.value.data.map(post => post.id === editing_id.value ? new_post : post);
+      if (comments.value) {
+        comments.value.data = comments.value.data.map(post => post.id === editing_id.value ? new_post : post);
+      } else {
+        comments.value = { data: [new_post] } as any;
+      }
+
       editing_id.value = null;
     } else {
       const post = await createPostComments({

@@ -29,7 +29,7 @@ import { computed, defineEmits } from 'vue';
 </script>
 
 <template>
-  <div class="pages-container">
+  <div class="pages-container" v-if="getAvailablePages.length > 1">
     <button @click="fetchData(1)" v-if="hasFirstButton">
       Start
     </button>
