@@ -37,7 +37,7 @@ class Post extends Model
         if ($user) {
             $userVote = $this->postVotes()->where('user_id', $user->id)->first();
 
-            return $userVote ? $userVote->vote_type : null;
+            return $userVote;
         }
 
         return null;
