@@ -147,7 +147,7 @@
   const getUpdatedAt = computed(() => formatDate(post.value.updated_at));
   const hasChanges = computed(() => post.value.created_at !== post.value.updated_at);
   const canEditPost = computed(() => post.value.user_id === getUser.value?.id);
-  const getCommets = computed(() => comments.value.data || []);
+  const getCommets = computed(() => comments.value?.data || []);
   const getPostResponseLabel = computed(() => editing_id.value ? 'Edit response' : 'Send response')
   const postResponseButtonDisabled = computed(() => {
     return ! response.value ||
@@ -236,7 +236,7 @@
       </div>
 
       <div class="answers-wrapper">
-        <span>{{ comments.total }} responses</span>
+        <span>{{ comments?.total || 0 }} responses</span>
 
         <Spinner v-if="comments_request_pending" />
 
