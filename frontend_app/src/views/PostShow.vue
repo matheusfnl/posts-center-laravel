@@ -13,9 +13,12 @@
 
   import { fetchPost } from '@/api/fetchPost';
   import { fetchPostComments } from '@/api/fetchPostComments';
+  import { editVote } from '@/api/editVote';
+  import { createVote } from '@/api/createVote';
 
   import type Post from '@/interfaces/post';
   import type Resource from '@/interfaces/resource';
+  import type Vote from '@/interfaces/vote';
 
   const { proxy } = getCurrentInstance() || {};
   const route = useRoute();
@@ -26,6 +29,7 @@
   const request_pending = ref(false);
   const comments_request_pending = ref(false);
   const response = ref('');
+  const vote = ref({} as Vote);
 
   const formatDate = (date_string: string) => {
     const date = new Date(date_string);
@@ -68,6 +72,25 @@
     comments_request_pending.value = false;
   }
 
+  const voteSelected = (vote_type: string) => vote.value?.vote_type === vote_type;
+  const setVote = async (vote_type: string) => {
+    const params = {
+      id: post.value.id,
+      vote_type,
+    };
+
+    if (vote.value) {
+      vote.value.vote_type = vote_type;
+      vote.value = await editVote({
+        ...params,
+        vote_id: vote.value.id,
+      });
+    } else {
+      vote.value = { vote_type } as any;
+      vote.value = await createVote(params);
+    }
+  };
+
   const getUser = computed(() => authStore.user);
   const getCreatedAt = computed(() => formatDate(post.value.created_at));
   const getUpdatedAt = computed(() => formatDate(post.value.updated_at));
@@ -83,7 +106,8 @@
     ]);
 
     if (results[0].status === 'fulfilled') {
-      post.value = results[0].value;
+      post.value = results[0].value as Post;
+      vote.value  = results[0].value.vote;
     }
 
     request_pending.value = false;
@@ -96,6 +120,16 @@
 
     <template v-else>
       <div class="post-header">
+        <div class="answer-options">
+          <div class="option" :class="{ 'selected' : voteSelected('upvote') }" @click="setVote('upvote')">
+            <UpIcon :size="22" />
+          </div>
+
+          <div class="option" :class="{ 'selected' : voteSelected('downvote') }" @click="setVote('downvote')">
+            <DownIcon :size="22" />
+          </div>
+        </div>
+
         <div class="title-header">
           <span class="title">
             {{ post.title }}
@@ -152,21 +186,8 @@
           <div class="answers-container">
             <div class="answer-item" v-for="comment in getCommets" :key="comment.id">
               <div class="answer-content">
-                <span class="name">User name</span>
-
-                <span class="answer">
-                  {{ comment.description }}
-                </span>
-              </div>
-
-              <div class="answer-options">
-                <div class="option">
-                  <UpIcon :size="22" />
-                </div>
-
-                <div class="option">
-                  <DownIcon :size="22" />
-                </div>
+                <span class="name">{{ comment.user_name }}</span>
+                <span class="answer">{{ comment.description }}</span>
               </div>
             </div>
           </div>
@@ -195,8 +216,24 @@
     margin-top: 32px;
     display: flex;
     gap: 10px;
+    align-items: flex-start;
   }
 
+  .post-header .answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+  .post-header .answer-options .option {
+    cursor: pointer;
+    display: flex;
+  }
+
+  .post-header .answer-options .option * { stroke: var(--text-500); }
+  .post-header .answer-options .option:hover * { stroke: var(--primary-500); }
+  .post-header .answer-options .option.selected * { stroke: var(--primary-500); }
   .post-header .title-header { flex: 1; }
   .post-header .title-header .title { font-size: 24px; }
   .post-header .title-header .post-info {
@@ -277,17 +314,4 @@
   }
 
   .answers-wrapper .answers-container .answer-item .answer-content .answer { font-size: 12px; }
-  .answers-wrapper .answers-container .answer-item .answer-options {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .answers-wrapper .answers-container .answer-item .answer-options .option {
-    cursor: pointer;
-    display: flex;
-  }
-
-  .answers-wrapper .answers-container .answer-item .answer-options .option * { stroke: var(--text-500); }
-  .answers-wrapper .answers-container .answer-item .answer-options .option:hover * { stroke: var(--primary-500); }
 </style>
