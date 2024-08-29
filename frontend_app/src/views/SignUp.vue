@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed, getCurrentInstance } from 'vue';
+  import { ref, computed } from 'vue';
   import { useRouter } from 'vue-router';
 
   import Spinner from '@/shared/SpinnerFeedback.vue';
@@ -8,8 +8,10 @@
 
   import { useAuthStore } from '@/stores/auth';
 
+  import type ExtendedError from '@/interfaces/extended-error';
+  import type ApiError from '@/interfaces/api-error';
+
   const authStore = useAuthStore();
-  const { proxy } = getCurrentInstance() || {};
   const router = useRouter()
 
   const username = ref('');
@@ -17,6 +19,7 @@
   const confirmation_password = ref('');
   const email = ref('');
   const request_pending = ref(false);
+  const api_errors = ref<ApiError>({});
 
   const signInDisabled = computed(() => ! username.value ||
     ! password.value ||
@@ -33,9 +36,24 @@
     });
 
     request_pending.value = false;
+
+    if (user instanceof Error) {
+      const { response: { data: { errors = {} as ApiError } = {} } = {} } = user as ExtendedError;
+
+      return api_errors.value = errors;
+    }
+
     authStore.setUser(user);
     router.push('/');
   };
+
+  const getHasError = (field: string) => {
+    if (api_errors.value?.[field]?.length) {
+      return api_errors.value[field][0];
+    }
+
+    return '';
+  }
 </script>
 
 <template>
@@ -53,16 +71,19 @@
       <div class="input-container">
         <label for="email">Email</label>
         <input name="email" type="email" v-model="email" />
+        <span class="error-feedback" v-if="getHasError('email')">{{ getHasError('email') }}</span>
       </div>
 
       <div class="input-container">
         <label for="password">Password</label>
         <input name="password" type="password" v-model="password" />
+        <span class="error-feedback" v-if="getHasError('password')">{{ getHasError('password') }}</span>
       </div>
 
       <div class="input-container">
-        <label for="password">Confirm password</label>
-        <input name="password" type="password" v-model="confirmation_password" />
+        <label for="confirmation_password">Confirm password</label>
+        <input name="confirmation_password" type="password" v-model="confirmation_password" />
+        <span class="error-feedback" v-if="getHasError('confirmation_password')">{{ getHasError('confirmation_password') }}</span>
       </div>
 
       <div class="actions-container">
@@ -109,6 +130,11 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .input-container .error-feedback {
+    color: var(--error-500);
+    font-size: 12px;
   }
 
   .actions-container {

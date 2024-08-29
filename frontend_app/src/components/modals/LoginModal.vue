@@ -8,10 +8,14 @@
 
   import { useAuthStore } from '@/stores/auth';
 
+  import type ApiError from '@/interfaces/api-error';
+  import type ExtendedError from '@/interfaces/extended-error';
+
   const authStore = useAuthStore();
   const email = ref('');
   const password = ref('');
   const request_pending = ref(false);
+  const api_errors = ref<ApiError>({});
 
   const { proxy } = getCurrentInstance() || {};
   const router = useRouter()
@@ -30,9 +34,24 @@
     });
 
     request_pending.value = false;
+
+    if (user instanceof Error) {
+      const { response: { data: { errors = {} as ApiError } = {} } = {} } = user as ExtendedError;
+
+      return api_errors.value = errors;
+    }
+
     authStore.setUser(user);
     proxy?.$modal?.close();
   };
+
+  const getHasError = (field: string) => {
+    if (api_errors.value?.[field]?.length) {
+      return api_errors.value[field][0];
+    }
+
+    return '';
+  }
 </script>
 
 <template>
@@ -44,11 +63,13 @@
     <div class="input-container">
       <label for="email">Email</label>
       <input name="email" type="text" v-model="email" />
+      <span class="error-feedback" v-if="getHasError('email')">{{ getHasError('email') }}</span>
     </div>
 
     <div class="input-container">
       <label for="password">Password</label>
       <input name="password" type="password" v-model="password" />
+      <span class="error-feedback" v-if="getHasError('password')">{{ getHasError('password') }}</span>
     </div>
 
     <div class="actions-container">
@@ -87,6 +108,11 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .input-container .error-feedback {
+    color: var(--error-500);
+    font-size: 12px;
   }
 
   .actions-container {
