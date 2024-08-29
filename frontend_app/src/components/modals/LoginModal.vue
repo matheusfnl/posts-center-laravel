@@ -32,7 +32,6 @@
     request_pending.value = false;
     authStore.setUser(user);
     proxy?.$modal?.close();
-    proxy?.$auth?.login();
   };
 </script>
 

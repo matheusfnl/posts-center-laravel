@@ -51,9 +51,9 @@
   // Post
 
   const getPosts = computed(() => postsStore.posts);
+  const getUser = computed(() => authStore.user);
   const handleAddPost = () => {
-    const user = authStore.user;
-    const modal_component = user?.id ? PostModal : LoginModal;
+    const modal_component = getUser.value?.id ? PostModal : LoginModal;
 
     proxy?.$modal?.open({ component: modal_component });
   };

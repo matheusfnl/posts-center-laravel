@@ -34,7 +34,6 @@
 
     request_pending.value = false;
     authStore.setUser(user);
-    proxy?.$auth?.login();
     router.push('/');
   };
 </script>

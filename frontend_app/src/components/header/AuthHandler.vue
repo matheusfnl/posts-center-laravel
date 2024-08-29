@@ -10,14 +10,12 @@
 
   import { logout } from '@/api/logout';
 
-  import { bus } from '@/plugins/bus-emitter';
-
   const { proxy } = getCurrentInstance() || {};
   const authStore = useAuthStore();
 
-  const logged = ref(!! authStore.user?.id);
+  const getUser = computed(() => authStore.user);
   const getIcon = computed(() => {
-    if (logged.value) {
+    if (getUser.value?.id) {
       return LogoutIcon;
     }
 
@@ -25,18 +23,14 @@
   })
 
   const handleClick = async () => {
-    if (logged.value) {
+    if (getUser.value?.id) {
       await logout();
-      return logged.value = false;
+      return authStore.setUser({});
     }
 
     proxy?.$modal?.open({ component: LoginModal })
   };
 
-  onMounted(() => {
-    bus.on('login', () => logged.value = true);
-    bus.on('logout', () => logged.value = false);
-  });
 </script>
 
 <template>
